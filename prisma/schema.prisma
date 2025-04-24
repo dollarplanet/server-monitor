@@ -17,10 +17,10 @@ model user {
 model server {
   id         String      @id @default(uuid())
   name       String
-  statistics statistic[]
+  usages usage[]
 }
 
-model statistic {
+model usage {
   id       Int     @id @default(autoincrement())
   cpu      Float
   memory   Float
