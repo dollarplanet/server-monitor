@@ -17,23 +17,24 @@ model user {
   updatedAt      DateTime         @default(now()) @db.Timestamp
 }
 
-model server {
+model machine {
   id        String   @id @default(uuid())
   name      String
+  token     String
   usage     usage[]
   createdAt DateTime @default(now()) @db.Timestamp
   updatedAt DateTime @default(now()) @db.Timestamp
 }
 
 model usage {
-  id        Int      @id @default(autoincrement())
-  cpu       Float
-  memory    Float
-  disk      Float
-  serverId  String
-  machine   server?  @relation(fields: [serverId], references: [id])
-  createdAt DateTime @default(now()) @db.Timestamp
-  updatedAt DateTime @default(now()) @db.Timestamp
+  id         Int      @id @default(autoincrement())
+  cpu        Float
+  memory     Float
+  disk       Float
+  machine    String
+  machineRef machine? @relation(fields: [machine], references: [id])
+  createdAt  DateTime @default(now()) @db.Timestamp
+  updatedAt  DateTime @default(now()) @db.Timestamp
 }
 
 enum permissionGroupEnum {
@@ -53,21 +54,21 @@ enum permissionEnum {
 }
 
 model permission {
-  id                permissionEnum      @id
-  label             String
-  permissionGroup   permissionGroup?    @relation(fields: [permissionGroupId], references: [id])
-  permissionGroupId permissionGroupEnum
-  userPermission    userPermission[]
-  createdAt         DateTime            @default(now()) @db.Timestamp
-  updatedAt         DateTime            @default(now()) @db.Timestamp
+  id                 permissionEnum      @id
+  label              String
+  permissionGroupRef permissionGroup?    @relation(fields: [permissionGroup], references: [id])
+  permissionGroup    permissionGroupEnum
+  userPermission     userPermission[]
+  createdAt          DateTime            @default(now()) @db.Timestamp
+  updatedAt          DateTime            @default(now()) @db.Timestamp
 }
 
 model userPermission {
-  fingerprint  String         @id // userId + permissionGroupId
-  user         user?          @relation(fields: [userId], references: [id])
-  userId       String
-  permission   permission?    @relation(fields: [permissionId], references: [id])
-  permissionId permissionEnum
-  createdAt    DateTime       @default(now()) @db.Timestamp
-  updatedAt    DateTime       @default(now()) @db.Timestamp
+  fingerprint   String         @id // userId + permissionGroupId
+  userRef       user?          @relation(fields: [user], references: [id])
+  user          String
+  permissionRef permission?    @relation(fields: [permission], references: [id])
+  permission    permissionEnum
+  createdAt     DateTime       @default(now()) @db.Timestamp
+  updatedAt     DateTime       @default(now()) @db.Timestamp
 }

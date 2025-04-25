@@ -20,7 +20,7 @@ export async function permissionSeed() {
         create: {
           id: permission,
           label: data.label,
-          permissionGroupId: data.group
+          permissionGroup: data.group
         }
       });
     }
