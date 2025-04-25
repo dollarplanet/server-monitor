@@ -10,21 +10,64 @@ datasource db {
 }
 
 model user {
-  id    String @id @default(uuid())
-  email String
+  id             String           @id @default(uuid())
+  email          String
+  userPermission userPermission[]
+  createdAt      DateTime         @default(now()) @db.Timestamp
+  updatedAt      DateTime         @default(now()) @db.Timestamp
 }
 
 model server {
-  id         String      @id @default(uuid())
-  name       String
-  usages usage[]
+  id        String   @id @default(uuid())
+  name      String
+  usage     usage[]
+  createdAt DateTime @default(now()) @db.Timestamp
+  updatedAt DateTime @default(now()) @db.Timestamp
 }
 
 model usage {
-  id       Int     @id @default(autoincrement())
-  cpu      Float
-  memory   Float
-  disk     Float
-  serverId String
-  machine  server? @relation(fields: [serverId], references: [id])
+  id        Int      @id @default(autoincrement())
+  cpu       Float
+  memory    Float
+  disk      Float
+  serverId  String
+  machine   server?  @relation(fields: [serverId], references: [id])
+  createdAt DateTime @default(now()) @db.Timestamp
+  updatedAt DateTime @default(now()) @db.Timestamp
+}
+
+enum permissionGroupEnum {
+  DASHBOARD
+}
+
+model permissionGroup {
+  id         permissionGroupEnum @id
+  label      String
+  permission permission[]
+  createdAt  DateTime            @default(now()) @db.Timestamp
+  updatedAt  DateTime            @default(now()) @db.Timestamp
+}
+
+enum permissionEnum {
+  DASHBOARD_VIEW
+}
+
+model permission {
+  id                permissionEnum      @id
+  label             String
+  permissionGroup   permissionGroup?    @relation(fields: [permissionGroupId], references: [id])
+  permissionGroupId permissionGroupEnum
+  userPermission    userPermission[]
+  createdAt         DateTime            @default(now()) @db.Timestamp
+  updatedAt         DateTime            @default(now()) @db.Timestamp
+}
+
+model userPermission {
+  fingerprint  String         @id // userId + permissionGroupId
+  user         user?          @relation(fields: [userId], references: [id])
+  userId       String
+  permission   permission?    @relation(fields: [permissionId], references: [id])
+  permissionId permissionEnum
+  createdAt    DateTime       @default(now()) @db.Timestamp
+  updatedAt    DateTime       @default(now()) @db.Timestamp
 }
